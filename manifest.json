@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Auto Contract Opener",
+  "version": "1.0",
+  "description": "Open multiple contracts automatically with Show Documents.",
+  "permissions": ["scripting", "tabs", "activeTab"],
+  "host_permissions": ["https://newsnoc/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Contract Opener"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://newsnoc/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
