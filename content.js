@@ -1,9 +1,10 @@
 window.addEventListener("load", () => {
   const params = new URLSearchParams(location.search);
-  const serviceName = params.get("serviceName");
-  const transactionId = params.get("transactionId");
-  const serviceTypeId = params.get("serviceTypeId");
-  const action = params.get("action");
+  const hashParams = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+  const serviceName = params.get("serviceName") || hashParams.get("serviceName");
+  const transactionId = params.get("transactionId") || hashParams.get("transactionId");
+  const serviceTypeId = params.get("serviceTypeId") || hashParams.get("serviceTypeId");
+  const action = params.get("action") || hashParams.get("action") || "edit";
 
   if (serviceName && transactionId && serviceTypeId && action) {
     const started = Date.now();
@@ -18,6 +19,7 @@ window.addEventListener("load", () => {
   }
 
   ensureShowDocuments();
+  injectMainScript();
 });
 
 function ensureShowDocuments() {
@@ -49,4 +51,14 @@ function tryClickShowDocuments(root) {
     if (t.includes("show document") || t.includes("show documents")) { try { c.click(); } catch (e) {} return true; }
   }
   return false;
+}
+
+function injectMainScript(){
+  try{
+    const s=document.createElement('script');
+    s.src=chrome.runtime.getURL('inject.js');
+    s.type='text/javascript';
+    s.onload=function(){ if(s.parentNode) s.parentNode.removeChild(s); };
+    (document.documentElement||document.head||document.body).appendChild(s);
+  }catch(e){}
 }
