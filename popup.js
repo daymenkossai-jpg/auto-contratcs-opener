@@ -144,6 +144,8 @@ function scanForContracts() {
 function collectContractUrls(count) {
   const rows = document.getElementsByClassName("ui-widget-content jqgrow ui-row-ltr");
   const urls = [];
+  const base = new URL(location.href);
+  base.hash = "";
   for (const row of rows) {
     if (urls.length >= count) break;
     const icon = row.querySelector("i.icon-edit");
@@ -153,9 +155,15 @@ function collectContractUrls(count) {
     const onclick = link.getAttribute("onclick") || "";
     const args = Array.from(onclick.matchAll(/"([^"]*)"/g)).map(m => m[1]);
     if (args.length >= 4) {
-      const base = "https://newsnoc/uiSNOC/main/service?cat=viewTaskPage_cs";
-      const u = `${base}&serviceName=${encodeURIComponent(args[0])}&transactionId=${encodeURIComponent(args[1])}&serviceTypeId=${encodeURIComponent(args[2])}&action=${encodeURIComponent(args[3])}`;
-      urls.push(u);
+      const hp = new URLSearchParams();
+      hp.set("openContract", "1");
+      hp.set("serviceName", args[0]);
+      hp.set("transactionId", args[1]);
+      hp.set("serviceTypeId", args[2]);
+      hp.set("action", args[3] || "edit");
+      const u = new URL(base.href);
+      u.hash = hp.toString();
+      urls.push(u.href);
     }
   }
   return urls;
